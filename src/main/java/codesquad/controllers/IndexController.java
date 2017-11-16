@@ -12,8 +12,4 @@ public class IndexController {
         return "fuck you world!";
     }
 
-    @GetMapping("/pobi")
-    public String returnPobi() {
-        return "hi pobi.";
-    }
 }
