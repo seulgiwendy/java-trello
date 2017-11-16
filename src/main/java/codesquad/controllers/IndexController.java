@@ -11,6 +11,9 @@ public class IndexController {
     public String returnHello() {
         return "fuck you world!";
     }
-    //jenkins not working?
 
+    @GetMapping("/pobi")
+    public String returnPobi() {
+        return "Gradle + Jenkins is now working! Hoorray!";
+    }
 }
