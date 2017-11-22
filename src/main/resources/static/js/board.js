@@ -1,7 +1,26 @@
 var BOARD = (function (window){
 
 	'use strict';
+    window.onload = () => {
+        fetch("/api/decks")
+            .then(decks => {
+                return decks.json();
+            }).then(json => {
+                console.log(json);
+                return json._embedded.decks;
+        }).then(decks => {
+            for(var deck in decks) {
+                console.log(decks[deck]);
 
+                $(".add-deck-form").css('display','none');
+                var deck = deckTemplate({"value":decks[deck].title})
+                $(".add-deck-area").before(deck);
+                $("#add-deck").val("");
+                $(".add-deck-btn").css('display','block');
+            }
+        })
+
+    }
   	var deckTemplate = Handlebars.compile(Template.deck),
   		cardTemplate = Handlebars.compile(Template.card),
   		commentTemplate = Handlebars.compile(Template.comment);
@@ -69,6 +88,7 @@ var BOARD = (function (window){
 
 	 }
 
+
 	function saveCard(e){
 
         var cardTitle = $(e.target).parents(".add-card-form").find(".card-title").val();
@@ -118,9 +138,16 @@ var BOARD = (function (window){
 			return;
 		}
 
-        // $.ajax({
-        //
-        // }).done(function(){
+		var dataString = `{"title" : "${deckTitle}"}`;
+
+        $.ajax({
+			type: 'post',
+			url: "http://localhost:8080/api/decks",
+			data: dataString,
+			dataType: 'json',
+            contentType: 'application/json'
+        
+        }).done(function(){
 
 			$(".add-deck-form").css('display','none');
 			var deck = deckTemplate({"value":deckTitle})
@@ -128,9 +155,10 @@ var BOARD = (function (window){
 			$("#add-deck").val("");
 			$(".add-deck-btn").css('display','block');
 
-        // }).fail(function(){
-        //
-        // });
+        }).fail(function(){
+			console.log(dataString);
+			console.log("망했어요.");
+        });
 
 
 		}

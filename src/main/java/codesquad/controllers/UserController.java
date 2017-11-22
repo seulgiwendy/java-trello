@@ -16,7 +16,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping("/api/user")
+    @PostMapping("/api/user/join")
     public ResponseEntity<UserDto> createUser(User user) {
         this.userRepository.save(user);
 
@@ -34,6 +34,8 @@ public class UserController {
         }
         return null;
     }
+
+
 
     @GetMapping("/loginForm")
     public String getLoginPage() {

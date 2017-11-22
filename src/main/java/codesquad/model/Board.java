@@ -1,26 +1,34 @@
 package codesquad.model;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Board {
 
-    @ManyToOne
-    private User owner;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @ManyToMany
+    private List<User> users;
+
+    @OneToMany
+    private List<Deck> cardLists;
+
     private String title;
 
-    public Board (User owner, String title) {
-        this.owner = owner;
+    public Board (List<User> users, String title) {
+        this.users = users;
         this.title = title;
     }
 
-    public User getOwner() {
-        return owner;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     public String getTitle() {
@@ -30,4 +38,5 @@ public class Board {
     public void setTitle(String title) {
         this.title = title;
     }
+
 }

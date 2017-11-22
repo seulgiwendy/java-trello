@@ -1,39 +1,29 @@
 package codesquad.model;
 
-import javax.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
+
+@Entity
 public class Card {
 
-    @ManyToOne
-    private Board board;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
     @ManyToOne
-    private User user;
+    @JsonIgnore
+    private Deck deck;
 
     private String title;
-    private String contents;
+    private String content;
 
-    public Card(Board board, User user, String title, String contents) {
-        this.board = board;
-        this.user = user;
-        this.title = title;
-        this.contents = contents;
+    public String getContent() {
+        return content;
     }
 
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getTitle() {
@@ -44,11 +34,7 @@ public class Card {
         this.title = title;
     }
 
-    public String getContents() {
-        return contents;
-    }
-
-    public void setContents(String contents) {
-        this.contents = contents;
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 }
