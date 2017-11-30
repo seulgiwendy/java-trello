@@ -1,8 +1,8 @@
 package codesquad.controllers;
 
 import codesquad.dto.UserDto;
-import codesquad.model.User;
-import codesquad.repository.UserRepository;
+import codesquad.model.Account;
+import codesquad.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,23 +14,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository accountRepository;
 
     @PostMapping("/api/user/join")
-    public ResponseEntity<UserDto> createUser(User user) {
-        this.userRepository.save(user);
+    public ResponseEntity<UserDto> createUser(Account account) {
+        this.accountRepository.save(account);
 
-        return new ResponseEntity<UserDto>(new UserDto(user), HttpStatus.OK);
+        return new ResponseEntity<UserDto>(new UserDto(account), HttpStatus.OK);
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<UserDto> loginCheck(User user) {
-        User expected = this.userRepository.findByUserId(user.getUserId());
+    public ResponseEntity<UserDto> loginCheck(Account account) {
+        Account expected = this.accountRepository.findByUserId(account.getUserId()).get();
         if (expected == null) {
-            return new ResponseEntity<UserDto>(new UserDto(new User()), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<UserDto>(new UserDto(new Account()), HttpStatus.FORBIDDEN);
         }
-        if (expected.isLoginable(user)) {
-            return new ResponseEntity<UserDto>(new UserDto(user), HttpStatus.OK);
+        if (expected.isLoginable(account)) {
+            return new ResponseEntity<UserDto>(new UserDto(account), HttpStatus.OK);
         }
         return null;
     }

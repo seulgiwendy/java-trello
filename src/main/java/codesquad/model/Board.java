@@ -11,24 +11,24 @@ public class Board {
     private long id;
 
     @ManyToMany
-    private List<User> users;
+    private List<Account> accounts;
 
     @OneToMany
     private List<Deck> cardLists;
 
     private String title;
 
-    public Board (List<User> users, String title) {
-        this.users = users;
+    public Board (List<Account> accounts, String title) {
+        this.accounts = accounts;
         this.title = title;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 
     public String getTitle() {

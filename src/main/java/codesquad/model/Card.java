@@ -37,4 +37,8 @@ public class Card {
     public void setDeck(Deck deck) {
         this.deck = deck;
     }
+
+    public Deck getDeck() {
+        return this.deck;
+    }
 }

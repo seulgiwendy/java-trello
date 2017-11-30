@@ -1,6 +1,6 @@
 package codesquad.dto;
 
-import codesquad.model.User;
+import codesquad.model.Account;
 
 public class UserDto {
 
@@ -14,10 +14,10 @@ public class UserDto {
         this.name = name;
     }
 
-    public UserDto(User user) {
-        this.userId = user.getUserId();
-        this.password = user.getPassword();
-        this.name = user.getName();
+    public UserDto(Account account) {
+        this.userId = account.getUserId();
+        this.password = account.getPassword();
+        this.name = account.getName();
     }
 
     public String getUserId() {

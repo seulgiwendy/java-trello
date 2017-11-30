@@ -1,5 +1,7 @@
 package codesquad.model;
 
+import com.google.common.collect.Lists;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class Deck {
     private String title;
 
     @OneToMany
-    private List<Card> cards;
+    private List<Card> cards = Lists.newArrayList();
 
     public Deck() {
 
@@ -29,5 +31,17 @@ public class Deck {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
+    public void setCard(Card card) {
+        this.cards.add(card);
     }
 }

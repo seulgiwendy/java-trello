@@ -8,8 +8,14 @@ import javax.persistence.Id;
 @Entity
 public class Role {
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     public enum RoleTypes {
-        ROLE_ADMIN, ROLE_OWNER, ROLE_GUEST
+        ROLE_ADMIN, ROLE_USER, ROLE_OWNER, ROLE_GUEST
+    }
+
+    public Role() {
+
     }
 
     @Id
@@ -20,5 +26,13 @@ public class Role {
 
     public Role(RoleTypes role) {
         this.role = role;
+    }
+
+    public Role(String role) {
+        this.role = RoleTypes.valueOf(ROLE_PREFIX + role);
+    }
+
+    public RoleTypes getRole() {
+        return role;
     }
 }

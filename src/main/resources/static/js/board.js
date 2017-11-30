@@ -25,6 +25,25 @@ var BOARD = (function (window){
   		cardTemplate = Handlebars.compile(Template.card),
   		commentTemplate = Handlebars.compile(Template.comment);
 
+    const drawDecks = (data) => {
+        for(var deck in data) {
+            console.log(data[deck]);
+
+            let deckData = data[deck];
+
+            $(".add-deck-form").css('display','none');
+            var deck = deckTemplate({"value":deckData.title})
+            $(".add-deck-area").before(deck);
+            $("#add-deck").val("");
+            $(".add-deck-btn").css('display','block');
+
+        }
+    }
+
+    const drawCards = (deck) => {
+
+    }
+
 	function init(){
 
 		$("#modal").modal();
