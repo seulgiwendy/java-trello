@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity webSecurity) {
         webSecurity
                 .ignoring()
-                .antMatchers("/api/**", "/css/**", "/js/**", "/lib/**", "/fonts/**", "/image/**");
+                .antMatchers("/css/**", "/js/**", "/lib/**", "/fonts/**", "/image/**");
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatcher("/**")
                 .authorizeRequests()
                 .antMatchers("/", "/login**", "/login/**", "/sign**", "/h2-console/**").permitAll()
-                .antMatchers("/board**").hasAuthority("ROLE_USER")
+                .antMatchers("/board**", "/api/**").hasAuthority("ROLE_USER")
                 .anyRequest()
                 .authenticated()
                 .and()
