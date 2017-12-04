@@ -45,4 +45,13 @@ public class Deck {
     public void setCard(Card card) {
         this.cards.add(card);
     }
+
+    @Override
+    public String toString() {
+        return "Deck{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", cards=" + cards +
+                '}';
+    }
 }
