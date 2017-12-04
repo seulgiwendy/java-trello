@@ -2,12 +2,15 @@ var BOARD = (function (window){
 
 	'use strict';
     window.onload = () => {
-        fetch("/api/decks")
+        fetch("/api/service/decks", {
+        	credentials: "same-origin"
+		})
             .then(decks => {
+            	console.log(decks);
                 return decks.json();
             }).then(json => {
                 console.log(json);
-                return json._embedded.decks;
+                return json;
         }).then(decks => {
             for(var deck in decks) {
                 console.log(decks[deck]);
@@ -161,7 +164,7 @@ var BOARD = (function (window){
 
         $.ajax({
 			type: 'post',
-			url: "http://localhost:8080/api/decks",
+			url: "http://localhost:8080/api/service/decks",
 			data: dataString,
 			dataType: 'json',
             contentType: 'application/json'

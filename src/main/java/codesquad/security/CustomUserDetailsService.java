@@ -45,11 +45,9 @@ public class CustomUserDetailsService implements UserDetailsService{
        account.setPassword("1111");
 
        accountRepository.save(account);
-
     }
 
     private User buildUserForAuthentication(Account account, List<GrantedAuthority> authorities) {
-
         return new User(account.getUserId(), account.getPassword(), true, true, true, true, authorities);
     }
 

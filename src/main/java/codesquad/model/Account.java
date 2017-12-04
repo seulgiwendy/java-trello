@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
@@ -19,6 +18,10 @@ public class Account {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "account")
     private List<Role> role;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account")
+    private List<Deck> decks;
 
     private String userId;
     private String password;
@@ -91,6 +94,25 @@ public class Account {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Deck> getDecks() {
+        return decks;
+    }
+
+    public void setDecks(List<Deck> decks) {
+        this.decks = decks;
+    }
+
+    public Deck addDeck(Deck deck){
+        if (this.decks == null) {
+            this.decks = Lists.newArrayList();
+        }
+
+        if (!(this.decks.add(deck))) {
+            return null;
+        }
+        return deck;
     }
 
     @Override

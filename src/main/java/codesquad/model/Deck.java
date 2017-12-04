@@ -14,7 +14,8 @@ public class Deck {
 
     private String title;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(table = "deck")
     private List<Card> cards = Lists.newArrayList();
 
     public Deck() {

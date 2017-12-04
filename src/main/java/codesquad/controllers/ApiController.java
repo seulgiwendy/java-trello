@@ -9,6 +9,8 @@ import codesquad.repository.AccountRepository;
 import codesquad.repository.CardRepository;
 import codesquad.repository.DeckRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,7 @@ public class ApiController {
     public String getUserDetails(Authentication authentication) {
         if (authentication.getPrincipal() instanceof SecurityAccount) {
             SecurityAccount loginUser = (SecurityAccount)authentication.getPrincipal();
-            return String.format("your userid is : %s, your name is : %s", loginUser.getAccount().getUserId(), loginUser.getAccount().getPassword());
+            return String.format("your userid is : %s, your name is : %s", loginUser.getAccount().getUserId(), loginUser.getAccount().getName());
 
         }
         return String.format("your username is %s, your details are as follows : %s" , authentication.getPrincipal(), authentication.getDetails());
@@ -51,7 +53,7 @@ public class ApiController {
     }
 
     @GetMapping("/decks/{id}")
-    public Deck getDeck(@PathVariable long id) {
+    public Deck getDeck(@PathVariable long id, Pageable pageable) {
         return deckRepository.findOne(id);
     }
 
