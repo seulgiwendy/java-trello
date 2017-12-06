@@ -73,12 +73,20 @@
             <artifactId>h2</artifactId>
             <version>1.4.192</version>
         </dependency>
-
+        <!--Sentry Exception Recording-->
         <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
             <version>1.6.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+
+        <!---->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>

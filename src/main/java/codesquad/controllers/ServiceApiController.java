@@ -1,9 +1,7 @@
 package codesquad.controllers;
 
-import codesquad.model.Account;
-import codesquad.model.Deck;
-import codesquad.model.ErrorDeck;
-import codesquad.model.SecurityAccount;
+import codesquad.dto.CardDto;
+import codesquad.model.*;
 import codesquad.repository.AccountRepository;
 import codesquad.security.NoRegisteredUserException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -25,6 +23,7 @@ import java.util.NoSuchElementException;
 public class ServiceApiController {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceApiController.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private AccountRepository accountRepository;
@@ -46,7 +45,7 @@ public class ServiceApiController {
         log.debug("posted deck information : {}", deckData);
         Deck deck = null;
         try {
-            deck = new ObjectMapper().readValue(deckData, Deck.class);
+            deck = objectMapper.readValue(deckData, Deck.class);
 
         } catch (Exception e) {
             return new ErrorDeck();
@@ -58,6 +57,22 @@ public class ServiceApiController {
 
         accountRepository.save(account);
         return deck;
+    }
+
+    @PostMapping("/newcards")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public Card saveNewCard(Authentication authentication, @RequestBody String cardData) {
+        log.debug("POSTed card information : {}", cardData);
+        CardDto cardinfo;
+
+        try {
+            cardinfo = objectMapper.readValue(cardData, CardDto.class);
+
+        } catch(Exception e) {
+
+        }
+
+        return null;
     }
 
     @GetMapping("/authinfo")

@@ -42,6 +42,11 @@ public class ApiController {
         return String.format("your username is %s, your details are as follows : %s" , authentication.getPrincipal(), authentication.getDetails());
     }
 
+    @GetMapping("/exception")
+    public String throwException() {
+        throw new RuntimeException("ssibal!");
+    }
+
     @DeleteMapping("/user")
     public void logout(HttpSession session) {
         session.invalidate();
@@ -68,7 +73,6 @@ public class ApiController {
         c.setDeck(parentDeck);
 
         return cardRepository.save(c);
-
 
 
     }

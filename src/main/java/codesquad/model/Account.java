@@ -14,6 +14,7 @@ import java.util.Optional;
 public class Account {
 
     @JsonIgnore
+    @Transient
     private ListUtils<Deck> listUtils;
 
     @Id
@@ -122,12 +123,10 @@ public class Account {
         return deck;
     }
 
-    public Deck addCard(String deckTitle, Card card) {
+    public void addCard(String deckTitle, Card card) {
         Deck targetDeck = this.decks.stream().filter(d -> d.getTitle().equals(deckTitle)).findFirst().orElseThrow(() -> new NoSuchElementException("no deck found!"));
         targetDeck.setCard(card);
         Optional<Deck> update = listUtils.update(this.decks, targetDeck);
-
-        return update.orElseThrow(() -> new ElementUpdateFailException("update failed!"));
 
     }
 
