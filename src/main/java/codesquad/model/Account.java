@@ -1,13 +1,20 @@
 package codesquad.model;
 
+import codesquad.utils.ElementUpdateFailException;
+import codesquad.utils.ListUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Entity
 public class Account {
+
+    @JsonIgnore
+    private ListUtils<Deck> listUtils;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -113,6 +120,15 @@ public class Account {
             return null;
         }
         return deck;
+    }
+
+    public Deck addCard(String deckTitle, Card card) {
+        Deck targetDeck = this.decks.stream().filter(d -> d.getTitle().equals(deckTitle)).findFirst().orElseThrow(() -> new NoSuchElementException("no deck found!"));
+        targetDeck.setCard(card);
+        Optional<Deck> update = listUtils.update(this.decks, targetDeck);
+
+        return update.orElseThrow(() -> new ElementUpdateFailException("update failed!"));
+
     }
 
     @Override

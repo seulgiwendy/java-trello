@@ -1,5 +1,7 @@
 package codesquad.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import javax.persistence.*;
@@ -7,6 +9,9 @@ import java.util.List;
 
 @Entity
 public class Deck {
+
+    @JsonIgnore
+    private static final String DECK_ADDR_PREFIX = "/api/service/decks/newcard";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,5 +58,18 @@ public class Deck {
                 ", title='" + title + '\'' +
                 ", cards=" + cards +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Deck deck = (Deck) o;
+        return Objects.equal(title, deck.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(title);
     }
 }

@@ -33,7 +33,6 @@ public class ServiceApiController {
     @GetMapping("/decks")
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<Deck> returnUserDecks(Authentication authentication) {
-        //TODO check user's authentication info and retrieve the deck he or she has.
         if (authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
