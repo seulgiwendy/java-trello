@@ -133,7 +133,7 @@ header .header-wrapper li a:hover{
   width: 230px;
   height: 40px;
   line-height: 40px;
-  margin: 0 auto;
+  margin: 20px auto;
   display: block;
   background-color: #90a4ae;
   color: white;
@@ -165,5 +165,11 @@ header .header-wrapper li a:hover{
   color: #616161;
   margin-top: 20px;
   margin-bottom: 7px;
+
+}
+
+.row .remember-me {
+  left: auto;
+  right: auto;
 
 }

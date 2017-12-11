@@ -23,10 +23,13 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
+import javax.sql.DataSource;
 import java.util.List;
 
 
@@ -52,6 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MaliciousSigninAuhenticationEntryPoint maliciousSigninAuhenticationEntryPoint;
+
+    @Qualifier("dataSource")
+    @Autowired
+    DataSource dataSource;
 
     private SigninRedirectionHandler signinRedirectionHandler = new SigninRedirectionHandler("/");
 
@@ -91,6 +98,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .successHandler(this.signinRedirectionHandler)
                     .permitAll()
                 .and()
+                    .rememberMe()
+                    .key("fuckyou")
+                    .userDetailsService(customUserDetailsService)
+                    .tokenValiditySeconds(24 * 24 * 60)
+                    .tokenRepository(persistentTokenRepository())
+                .and()
                     .addFilterBefore(generateFilterSet(), BasicAuthenticationFilter.class);
 
         httpSecurity
@@ -116,6 +129,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @ConfigurationProperties("github")
     public ClientResources githubResourcesNew() {
         return new ClientResources();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
     }
 
     private Filter generateFilterSet() {
