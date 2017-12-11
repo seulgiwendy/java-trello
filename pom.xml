@@ -38,11 +38,7 @@
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>js-cookie</artifactId>
-            <version>2.1.0</version>
-        </dependency>
+
         <!---->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -58,12 +54,6 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.3</version>
 		</dependency>
-        <dependency>
-            <groupId>com.github.jknack</groupId>
-            <artifactId>handlebars-maven-plugin</artifactId>
-            <version>4.0.6</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -87,6 +77,12 @@
         </dependency>
 
         <!---->
+        <dependency>
+            <groupId>pl.allegro.tech.boot</groupId>
+            <artifactId>handlebars-spring-boot-starter</artifactId>
+            <version>0.2.5</version>
+        </dependency>
+
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>

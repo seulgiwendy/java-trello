@@ -32,6 +32,11 @@ public class ApiController {
     @Autowired
     AccountRepository accountRepository;
 
+    @GetMapping("/ip")
+    public String getYourIpAddress(HttpServletRequest req) {
+        return "your IP is : " + req.getRemoteAddr();
+    }
+
     @GetMapping("/user")
     public String getUserDetails(Authentication authentication) {
         if (authentication.getPrincipal() instanceof SecurityAccount) {

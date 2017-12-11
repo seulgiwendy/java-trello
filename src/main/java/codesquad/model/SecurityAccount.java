@@ -1,6 +1,5 @@
 package codesquad.model;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

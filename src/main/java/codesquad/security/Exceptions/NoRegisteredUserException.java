@@ -1,4 +1,4 @@
-package codesquad.security;
+package codesquad.security.Exceptions;
 
 public class NoRegisteredUserException extends RuntimeException {
 

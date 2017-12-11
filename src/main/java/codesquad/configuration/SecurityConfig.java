@@ -1,11 +1,12 @@
 package codesquad.configuration;
 
-import codesquad.security.CustomUserDetailsService;
-import org.codehaus.jackson.map.ObjectMapper;
+import codesquad.security.*;
+import codesquad.security.Exceptions.AuthenticationFailException;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,16 +22,20 @@ import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
+import java.util.List;
 
 
 @Configuration
 @EnableOAuth2Client
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public static final String DEFAULT_USER_ROLE = "ROLE_USER";
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
     CustomUserDetailsService customUserDetailsService;
@@ -44,6 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Qualifier("oauth2ClientContext")
     @Autowired
     OAuth2ClientContext oAuth2ClientContext;
+
+    @Autowired
+    private MaliciousSigninAuhenticationEntryPoint maliciousSigninAuhenticationEntryPoint;
+
+    private SigninRedirectionHandler signinRedirectionHandler = new SigninRedirectionHandler("/");
 
     @Override
     public void configure(WebSecurity webSecurity) {
@@ -59,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+
         httpSecurity
                 .csrf().disable();
 
@@ -68,18 +79,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/login**", "/login/**", "/sign**", "/h2-console/**").permitAll()
+                .antMatchers("/", "/login**", "/login/**", "/sign**", "/h2-console/**", "/captcha**").permitAll()
                 .antMatchers("/board**", "/api/**").hasAuthority("ROLE_USER")
                 .anyRequest()
                 .authenticated()
                 .and()
 
                 .formLogin()
-                    .loginPage("/login.html")
+                    .loginPage("/signin")
                     .loginProcessingUrl("/signin")
+                    .successHandler(this.signinRedirectionHandler)
                     .permitAll()
                 .and()
-                    .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+                    .addFilterBefore(generateFilterSet(), BasicAuthenticationFilter.class);
 
         httpSecurity
                 .logout()
@@ -101,28 +113,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    @ConfigurationProperties("github.client")
-    public AuthorizationCodeResourceDetails github() {
-        return new AuthorizationCodeResourceDetails();
+    @ConfigurationProperties("github")
+    public ClientResources githubResourcesNew() {
+        return new ClientResources();
     }
 
-    @Bean
-    @ConfigurationProperties("github.resource")
-    public ResourceServerProperties githubResources() {
-        return new ResourceServerProperties();
+    private Filter generateFilterSet() {
+        CompositeFilter filter = new CompositeFilter();
+
+        List<Filter> filters = Lists.newArrayList();
+        filters.add(ssoFilter(githubResourcesNew(), "/login/github", SocialSigninProviders.GITHUB));
+        filter.setFilters(filters);
+
+        return filter;
     }
 
-    private Filter ssoFilter() {
-        OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter("/login/github");
-        OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate(github(), oAuth2ClientContext);
-        githubFilter.setRestTemplate(githubTemplate);
+    private Filter ssoFilter(ClientResources resources, String path, SocialSigninProviders providers) {
+        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(path);
+        OAuth2RestTemplate template = new OAuth2RestTemplate(resources.getClient(), oAuth2ClientContext);
 
-        UserInfoTokenServices uits = new UserInfoTokenServices(githubResources().getUserInfoUri(), github().getClientId());
-        uits.setRestTemplate(githubTemplate);
-        githubFilter.setTokenServices(uits);
+        String redirectUrl = "/";
 
-        githubFilter.setApplicationEventPublisher(this.applicationEventPublisher);
+        filter.setRestTemplate(template);
+        filter.setTokenServices(new OauthUserTokenService(resources, providers));
+        filter.setAuthenticationSuccessHandler(this.signinRedirectionHandler);
+        filter.setAuthenticationFailureHandler((req, res, auth) -> new AuthenticationFailException());
+        filter.setApplicationEventPublisher(this.applicationEventPublisher);
 
-        return githubFilter;
+        return filter;
+
     }
 }

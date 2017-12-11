@@ -1,5 +1,6 @@
-package codesquad.security;
+package codesquad.security.EventListener;
 
+import codesquad.security.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;

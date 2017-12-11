@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    private static SentryClient sentryClient;
-
     @GetMapping("/")
     public String getHomePage() {
         return "index.html";

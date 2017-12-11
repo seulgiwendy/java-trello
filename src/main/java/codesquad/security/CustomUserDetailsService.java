@@ -4,8 +4,8 @@ import codesquad.model.Account;
 import codesquad.model.Role;
 import codesquad.model.SecurityAccount;
 import codesquad.repository.AccountRepository;
+import codesquad.security.Exceptions.LoginAttemptExceedException;
 import com.google.common.collect.Lists;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +29,24 @@ public class CustomUserDetailsService implements UserDetailsService{
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
+    @Autowired
+    private HttpServletRequest req;
+
+    @Autowired
+    private BruteForceDetectionEventPublisher bruteForceDetectionEventPublisher;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("load username : {}" , username);
 
+        String ip = getClientIP();
+        if (loginAttemptService.isBlocked(ip)) {
+            bruteForceDetectionEventPublisher.publishEvent();
+            throw new LoginAttemptExceedException("login attempt exceeds!");
+        }
         return accountRepository.findByUserId(username).filter(a -> a != null)
                 .map(a -> new SecurityAccount(a)).orElseThrow(() -> new UsernameNotFoundException("No User Available!"));
         
@@ -55,7 +70,16 @@ public class CustomUserDetailsService implements UserDetailsService{
         List<GrantedAuthority> authorities = Lists.newArrayList();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorities;
+
         
+    }
+
+    private String getClientIP() {
+        String header = req.getHeader("X-Forwarded-For");
+        if (header == null) {
+            return req.getRemoteAddr();
+        }
+        return header.split(",")[0];
     }
 
 

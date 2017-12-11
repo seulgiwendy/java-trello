@@ -3,7 +3,7 @@ package codesquad.controllers;
 import codesquad.dto.CardDto;
 import codesquad.model.*;
 import codesquad.repository.AccountRepository;
-import codesquad.security.NoRegisteredUserException;
+import codesquad.security.Exceptions.NoRegisteredUserException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.ws.Service;
+import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -31,10 +30,12 @@ public class ServiceApiController {
 
     @GetMapping("/decks")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<Deck> returnUserDecks(Authentication authentication) {
+    public List<Deck> returnUserDecks(Authentication authentication, Principal principal) {
         if (authentication instanceof AnonymousAuthenticationToken) {
             return null;
         }
+        log.debug("type of authentiction token is : {}", authentication.getPrincipal().getClass().getName());
+        log.debug("type of principal token is : {}" , principal.getClass());
         return accountRepository.findByUserId(authentication.getName()).orElseThrow(() -> new NoSuchElementException("fuck!")).getDecks();
 
     }
