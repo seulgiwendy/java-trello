@@ -2,6 +2,8 @@ package codesquad.configuration;
 
 import codesquad.security.*;
 import codesquad.security.Exceptions.AuthenticationFailException;
+import codesquad.security.Handler.IntegratedFormloginFailureHandler;
+import codesquad.security.Handler.SigninRedirectionHandler;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     DataSource dataSource;
 
     private SigninRedirectionHandler signinRedirectionHandler = new SigninRedirectionHandler("/");
+    private IntegratedFormloginFailureHandler failureHandler = new IntegratedFormloginFailureHandler();
 
     @Override
     public void configure(WebSecurity webSecurity) {
@@ -96,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/signin")
                     .loginProcessingUrl("/signin")
                     .successHandler(this.signinRedirectionHandler)
+                    .failureHandler(this.failureHandler)
                     .permitAll()
                 .and()
                     .rememberMe()

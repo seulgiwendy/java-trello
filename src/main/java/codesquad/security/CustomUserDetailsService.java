@@ -45,7 +45,9 @@ public class CustomUserDetailsService implements UserDetailsService{
         String ip = getClientIP();
         if (loginAttemptService.isBlocked(ip)) {
             bruteForceDetectionEventPublisher.publishEvent();
+            //return null;
             throw new LoginAttemptExceedException("login attempt exceeds!");
+            //throw new RuntimeException("ssibal!");
         }
         return accountRepository.findByUserId(username).filter(a -> a != null)
                 .map(a -> new SecurityAccount(a)).orElseThrow(() -> new UsernameNotFoundException("No User Available!"));
