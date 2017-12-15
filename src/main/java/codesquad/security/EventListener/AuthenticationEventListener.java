@@ -44,7 +44,18 @@ public class AuthenticationEventListener {
     }
 
     private UserDetails getUser(Map<String, Object> userinfo) {
-        String username = this.extractor.extractPrincipal(userinfo).toString();
+        String username = null;
+        try {
+            username = this.extractor.extractPrincipal(userinfo).toString();
+        } catch (Exception e) {
+            username = (String)new PrincipalExtractor(){
+                @Override
+                public Object extractPrincipal(Map<String, Object> map) {
+                    map.values().stream().forEach(v -> log.debug(v.toString()));
+                    return "seulgi";
+                }
+            }.extractPrincipal(userinfo);
+        }
 
         log.debug("start extracting OAuth user details of user name : {}" , username);
 

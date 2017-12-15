@@ -3,7 +3,7 @@ package codesquad.configuration;
 import codesquad.security.*;
 import codesquad.security.Exceptions.AuthenticationFailException;
 import codesquad.security.Handler.IntegratedFormloginFailureHandler;
-import codesquad.security.Handler.SigninRedirectionHandler;
+import codesquad.security.Handler.IntegratedOAuthSigninSuccessHandler;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
-    private SigninRedirectionHandler signinRedirectionHandler = new SigninRedirectionHandler("/");
+    private IntegratedOAuthSigninSuccessHandler integratedOAuthSigninSuccessHandler = new IntegratedOAuthSigninSuccessHandler("/");
     private IntegratedFormloginFailureHandler failureHandler = new IntegratedFormloginFailureHandler();
 
     @Override
@@ -98,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                     .loginPage("/signin")
                     .loginProcessingUrl("/signin")
-                    .successHandler(this.signinRedirectionHandler)
+                    .successHandler(this.integratedOAuthSigninSuccessHandler)
                     .failureHandler(this.failureHandler)
                     .permitAll()
                 .and()
@@ -136,6 +136,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @ConfigurationProperties("naver")
+    public ClientResources naverResources() {
+        return new ClientResources();
+    }
+
+    @Bean
     public PersistentTokenRepository persistentTokenRepository() {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
@@ -147,6 +153,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         List<Filter> filters = Lists.newArrayList();
         filters.add(ssoFilter(githubResourcesNew(), "/login/github", SocialSigninProviders.GITHUB));
+        filters.add(ssoFilter(naverResources(), "/login/naver", SocialSigninProviders.NAVER));
         filter.setFilters(filters);
 
         return filter;
@@ -160,7 +167,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         filter.setRestTemplate(template);
         filter.setTokenServices(new OauthUserTokenService(resources, providers));
-        filter.setAuthenticationSuccessHandler(this.signinRedirectionHandler);
+        filter.setAuthenticationSuccessHandler(this.integratedOAuthSigninSuccessHandler);
         filter.setAuthenticationFailureHandler((req, res, auth) -> new AuthenticationFailException());
         filter.setApplicationEventPublisher(this.applicationEventPublisher);
 
