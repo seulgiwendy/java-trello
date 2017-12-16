@@ -1,5 +1,6 @@
 package codesquad.security;
 
+import codesquad.model.social.UserPropertyExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.FixedPrincipalExtractor;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.PrincipalExtractor;
 
@@ -14,6 +15,7 @@ public enum SocialSigninProviders {
     private final String ROLE_PREFIX = "ROLE_";
 
     private PrincipalExtractor extractor;
+    private UserPropertyExtractor propertyExtractor;
 
     SocialSigninProviders(PrincipalExtractor extractor) {
         this.extractor = extractor;

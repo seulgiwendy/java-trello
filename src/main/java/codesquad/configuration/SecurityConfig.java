@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
-    private IntegratedOAuthSigninSuccessHandler integratedOAuthSigninSuccessHandler = new IntegratedOAuthSigninSuccessHandler("/");
+    private IntegratedOAuthSigninSuccessHandler integratedOAuthSigninSuccessHandler = new IntegratedOAuthSigninSuccessHandler("/", SocialSigninProviders.GITHUB);
     private IntegratedFormloginFailureHandler failureHandler = new IntegratedFormloginFailureHandler();
 
     @Override
